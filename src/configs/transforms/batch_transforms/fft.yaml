@@ -1,0 +1,19 @@
+train:
+  data_object: # STFT spectrum tensor
+    _target_: src.transforms.fft_transform.FFTSpectrogram
+    sample_rate: 16000
+    win_length: 400
+    hop_length: 160
+    n_fft: 1024
+    power: 2.0
+    normalize: false
+
+inference:
+  data_object: # Same STFT settings for inference
+    _target_: src.transforms.fft_transform.FFTSpectrogram
+    sample_rate: 16000
+    win_length: 400
+    hop_length: 160
+    n_fft: 1024
+    power: 2.0
+    normalize: false

@@ -1,0 +1,7 @@
+test:
+  _target_: src.datasets.ASVSpoofDataset
+  data_root: "F:/SPOOF/DATASETS/ASVspoof2019_LA"
+  subset: "eval"
+  sample_rate: 16000
+  max_audio_length: 6.0
+  shuffle_index: false 

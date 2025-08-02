@@ -200,6 +200,9 @@ class BaseTrainer:
         self.is_train = True
         self.model.train()
         self.train_metrics.reset()
+        # Reset individual metrics
+        for metric in self.metrics["train"]:
+            metric.reset()
         self.writer.set_step((epoch - 1) * self.epoch_len)
         self.writer.add_scalar("epoch", epoch)
         for batch_idx, batch in enumerate(
@@ -247,6 +250,22 @@ class BaseTrainer:
             val_logs = self._evaluation_epoch(epoch, part, dataloader)
             logs.update(**{f"{part}_{name}": value for name, value in val_logs.items()})
 
+        self.is_train = True
+        # Step learning rate scheduler at the end of epoch
+        if self.lr_scheduler is not None and self.is_train:
+            old_lr = self.lr_scheduler.get_last_lr()[0]
+            self.logger.debug(f"Before step: epoch={epoch}, lr={old_lr:.6f}, last_epoch={getattr(self.lr_scheduler, 'last_epoch', 'N/A')}")
+            self.lr_scheduler.step()
+            new_lr = self.lr_scheduler.get_last_lr()[0]
+            self.logger.debug(f"After step: epoch={epoch}, lr={new_lr:.6f}, last_epoch={getattr(self.lr_scheduler, 'last_epoch', 'N/A')}")
+            
+            self.writer.set_step(epoch * self.epoch_len)
+            self.writer.add_scalar("learning rate", new_lr)
+            
+            if old_lr != new_lr:
+                self.logger.info(f"Learning Rate decreased: {old_lr:.6f} → {new_lr:.6f} (epoch {epoch})")
+            else:
+                self.logger.info(f"Learning Rate unchanged: {new_lr:.6f} (epoch {epoch})")
         return logs
 
     def _evaluation_epoch(self, epoch, part, dataloader):
@@ -263,6 +282,9 @@ class BaseTrainer:
         self.is_train = False
         self.model.eval()
         self.evaluation_metrics.reset()
+        # Reset individual metrics
+        for metric in self.metrics["inference"]:
+            metric.reset()
         with torch.no_grad():
             for batch_idx, batch in tqdm(
                 enumerate(dataloader),
@@ -524,6 +546,11 @@ class BaseTrainer:
         else:
             self.optimizer.load_state_dict(checkpoint["optimizer"])
             self.lr_scheduler.load_state_dict(checkpoint["lr_scheduler"])
+            
+            # Fix lr_scheduler state: sync last_epoch with actual epoch, working after this!!
+            if hasattr(self.lr_scheduler, 'last_epoch'):
+                self.lr_scheduler.last_epoch = self.start_epoch - 1
+                self.logger.info(f"Fixed lr_scheduler.last_epoch to {self.lr_scheduler.last_epoch}")
 
         self.logger.info(
             f"Checkpoint loaded. Resume training from epoch {self.start_epoch}"

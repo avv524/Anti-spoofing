@@ -1,0 +1,14 @@
+defaults:
+  - model: lcnn
+  - metrics: eer
+  - datasets: asvspoof_test_only
+  - dataloader: example
+  - transforms: fft_final
+  - _self_
+
+inferencer:
+  device_tensors: ["data_object", "labels"]
+  device: auto
+  save_path: "inference_results"
+  seed: 0
+  from_pretrained: "saved/asvspoof_lcnn/model_best.pth"

@@ -1,5 +1,5 @@
 _target_: src.logger.CometMLWriter
-project_name: "pytorch_template"
+project_name: "SPOOF_CM"
 workspace: null
 run_name: "testing"
 mode: "online"

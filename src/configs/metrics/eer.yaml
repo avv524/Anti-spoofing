@@ -1,0 +1,15 @@
+train:
+  - _target_: src.metrics.EERMetric
+    name: "EER"
+
+dev:
+  - _target_: src.metrics.EERMetric
+    name: "EER"
+
+eval:
+  - _target_: src.metrics.EERMetric
+    name: "EER"
+ 
+inference:
+  - _target_: src.metrics.EERMetric
+    name: "EER" 

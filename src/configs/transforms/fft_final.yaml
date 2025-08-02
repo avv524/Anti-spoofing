@@ -1,0 +1,6 @@
+defaults:
+  - batch_transforms: fft
+ 
+instance_transforms:
+  train: null
+  inference: null 

@@ -1,0 +1,23 @@
+train:
+  _target_: src.datasets.ASVSpoofDataset
+  data_root: "F:/SPOOF/DATASETS/ASVspoof2019_LA"  # Default my path to dataset
+  subset: "train"
+  sample_rate: 16000
+  max_audio_length: 6.0 # in paper was up to 6 sec, so i've done it too
+  shuffle_index: true
+
+dev:
+  _target_: src.datasets.ASVSpoofDataset
+  data_root: ${datasets.train.data_root}
+  subset: "dev" 
+  sample_rate: ${datasets.train.sample_rate}
+  max_audio_length: ${datasets.train.max_audio_length}
+  shuffle_index: false
+
+eval:
+  _target_: src.datasets.ASVSpoofDataset
+  data_root: ${datasets.train.data_root}
+  subset: "eval"
+  sample_rate: ${datasets.train.sample_rate}
+  max_audio_length: ${datasets.train.max_audio_length}
+  shuffle_index: false

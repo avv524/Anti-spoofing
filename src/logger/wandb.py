@@ -84,7 +84,7 @@ class WandBWriter:
         else:
             duration = datetime.now() - self.timer
             self.add_scalar(
-                "steps_per_sec", (self.step - previous_step) / duration.total_seconds()
+                "steps_per_sec", (self.step - previous_step) / (duration.total_seconds()+ 0.00000001) #idk, sometimes it crashed due to division by 0
             )
             self.timer = datetime.now()
 

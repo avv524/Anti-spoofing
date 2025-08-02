@@ -167,6 +167,10 @@ class Inferencer(BaseTrainer):
         self.model.eval()
 
         self.evaluation_metrics.reset()
+        # Reset individual metrics
+        if self.metrics is not None:
+            for metric in self.metrics["inference"]:
+                metric.reset()
 
         # create Save dir
         if self.save_path is not None:
